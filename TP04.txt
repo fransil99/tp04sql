@@ -1,0 +1,138 @@
+Identifique el esquema, la tabla y resuelva las siguientes consultas SQL:
+1. Seleccione el identificador y nombre de todas las instituciones que son Fundaciones.(V)
+2. Seleccione el identificador de distribuidor, identificador de departamento y nombre de todos
+los departamentos.(P)
+3. Muestre el nombre, apellido y el teléfono de todos los empleados cuyo id_tarea sea 7231,
+ordenados por apellido y nombre.(P)
+4. Muestre el apellido e identificador de todos los empleados que no cobran porcentaje de
+comisión.(P)
+5. Muestre el apellido y el identificador de la tarea de todos los voluntarios que no tienen
+coordinador.(V)
+6. Muestre los datos de los distribuidores internacionales que no tienen registrado teléfono.
+(P)
+7. Muestre los apellidos, nombres y mails de los empleados con cuentas de gmail y cuyo
+sueldo sea superior a $ 1000. (P)
+8. Seleccione los diferentes identificadores de tareas que se utilizan en la tabla empleado. (P)
+9. Muestre el apellido, nombre y mail de todos los voluntarios cuyo teléfono comienza con
++51. Coloque el encabezado de las columnas de los títulos &#39;Apellido y Nombre&#39; y &#39;Dirección
+de mail&#39;. (V)
+
+TUDAI-Fac.Cs.Exactas-UNICEN Práctico N° 4 Parte 1 Cursada 2024
+
+Consultas SQL - Consultas Simples
+
+2
+10. Hacer un listado de los cumpleaños de todos los empleados donde se muestre el nombre y
+el apellido (concatenados y separados por una coma) y su fecha de cumpleaños (solo el
+día y el mes), ordenado de acuerdo al mes y día de cumpleaños en forma ascendente. (P)
+11. Recupere la cantidad mínima, máxima y promedio de horas aportadas por los voluntarios
+nacidos desde 1990. (V)
+12. Listar la cantidad de películas que hay por cada idioma. (P)
+13. Calcular la cantidad de empleados por departamento. (P)
+14. Mostrar los códigos de películas que han recibido entre 3 y 5 entregas. (veces entregadas,
+NO cantidad de películas entregadas).
+
+15. ¿Cuántos cumpleaños de voluntarios hay cada mes?
+16. ¿Cuáles son las 2 instituciones que más voluntarios tienen?
+17. ¿Cuáles son los id de ciudades que tienen más de un departamento?
+
+
+
+
+
+
+							--RESOLUCION--
+
+
+
+
+
+1) SELECT id_institucion , nombre_institucion 
+FROM unc_esq_voluntario.institucion i 
+WHERE i.nombre_institucion ilike 'FUNDACION%';
+
+
+2)SELECT d.id_distribuidor , dp.id_departamento, dp.nombre
+FROM unc_esq_peliculas.distribuidor d, unc_esq_peliculas.departamento dp
+
+3)SELECT e.nombre, e.apellido, e.telefono, e.id_tarea
+FROM unc_esq_peliculas.empleado e
+WHERE id_tarea = '7231'
+ORDER BY e.apellido ,e.nombre;
+
+4)SELECT e.apellido, e,id_empleado, porc_comision
+FROM unc_esq_peliculas.empleado e
+WHERE porc_comision is null;
+
+5)SELECT v.apellido, v.id_tarea, v.id_coordinador
+FROM unc_esq_voluntario.voluntario v
+WHERE id_coordinador = null;
+
+6)SELECT id_distribuidor, nombre, direccion, telefono, tipo
+FROM unc_esq_peliculas.distribuidor d
+WHERE telefono is null;
+
+7)SELECT e.apellido, e.nombre, e.e_mail
+FROM unc_esq_peliculas.empleado e
+WHERE e.e_mail ilike '%gmail%' and e.sueldo > 1000;
+
+8)SELECT id_tarea
+FROM unc_esq_peliculas.empleado 
+
+9)SELECT v.apellido ||','|| v.nombre as "Apellido y Nombre" , v.e_mail as "Direccion de Mail", v.telefono
+FROM unc_esq_voluntario.voluntario v
+WHERE v.telefono like'+51%';
+
+10)SELECT e.nombre ||','|| e.apellido as "Nombre y Apellido", to_char(e.fecha_nacimiento, 'DD/MM') as "Fecha de Cumpleaños"
+FROM unc_esq_peliculas.empleado e
+ORDER BY e.fecha_nacimiento ASC
+
+11)SELECT MIN(horas_aportadas) AS "Min horas aportadas",
+       MAX(horas_aportadas) max,
+       AVG(horas_aportadas) avg
+FROM unc_esq_voluntario.voluntario
+WHERE fecha_nacimiento >= '1990-01-01';
+
+12)SELECT idioma, count(*) AS "Cantidad de peliculas"
+FROM unc_esq_peliculas.pelicula
+GROUP BY idioma
+
+13)SELECT d.id_departamento, COUNT(*) AS "Empleados"
+FROM unc_esq_peliculas.departamento d
+GROUP BY id_departamento;
+
+14)SELECT p.codigo_pelicula , COUNT(*) AS nro_entrega
+FROM  unc_esq_peliculas.pelicula p, unc_esq_peliculas.entrega e
+GROUP BY p.codigo_pelicula, e.nro_entrega BETWEEN 3 AND 5;
+
+15)SELECT COUNT(nro_voluntario) as cant_voluntarios
+FROM unc_esq_voluntario.voluntario
+GROUP BY EXTRACT(MONTH FROM fecha_nacimiento);
+
+16)SELECT id_institucion, COUNT(nro_voluntario) AS cantidad
+FROM unc_esq_voluntario.voluntario
+GROUP BY id_institucion
+ORDER BY cantidad DESC
+LIMIT 2;
+
+17)SELECT id_ciudad
+FROM unc_esq_pelicula.departamento
+GROUP BY id_ciudad HAVING COUNT(id_departamento) > 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
